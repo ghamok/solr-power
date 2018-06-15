@@ -447,13 +447,15 @@ class SolrPower_WP_Query {
 			'page_id',
 			'post_status',
 			'post_parent',
+			'post__in',
 			'name',
 
 		);
 		$convert = array(
-			'p'       => 'ID',
-			'page_id' => 'ID',
-			'name'    => 'post_name',
+			'p'       	=> 'ID',
+			'page_id' 	=> 'ID',
+			'post__in'	=> 'ID',
+			'name'    	=> 'post_name',
 		);
 		if ( ! $query->get( 's' ) && ! $query->get( 'solr_integrate' ) ) {
 			return '';
