@@ -209,12 +209,10 @@ class SolrPower_WP_Query {
 		$query->found_posts   = $search['numFound'];
 		$query->max_num_pages = ceil( $search['numFound'] / $query->get( 'posts_per_page' ) );
 
-		SolrPower_Api::get_instance()->add_log(
-			array(
-				'Results Found' => $search['numFound'],
-				'Query Time'    => $search_header['QTime'] . 'ms',
-			)
-		);
+		SolrPower_Api::get_instance()->add_log( array(
+			'Results Found' => $search['numFound'],
+			'Query Time'    => $search_header['QTime'] . 'ms',
+		) );
 
 		$posts = $this->parse_results( $search );
 
@@ -397,7 +395,7 @@ class SolrPower_WP_Query {
 	 *
 	 * @return mixed
 	 */
-	function the_posts( $posts, $query ) {
+	function the_posts( $posts, &$query ) {
 		if ( ! isset( $this->found_posts[ spl_object_hash( $query ) ] ) ) {
 			return $posts;
 		}
@@ -466,7 +464,7 @@ class SolrPower_WP_Query {
 			'post__in',
 			'post__not_in',
 			'name',
-
+			
 		);
 		$convert = array(
 			'p'       	=> 'ID',
@@ -572,6 +570,7 @@ class SolrPower_WP_Query {
 			switch ( $tax_value['operator'] ) {
 
 				case 'NOT IN':
+
 					$multi_query = array();
 					foreach ( $terms as $value ) {
 						$multi_query[] = '(' . $field . ':' . $value . ')';
@@ -692,7 +691,7 @@ class SolrPower_WP_Query {
 	 * @return string
 	 */
 	private function parse_meta_query( $meta_query ) {
-		$options = solr_options();
+		$options      = solr_options();
 		/**
 		 * Filter indexed custom fields
 		 *
@@ -729,6 +728,7 @@ class SolrPower_WP_Query {
 					$query[] = '(' . $meta_value['key'] . '_' . $type . ':[' . $this->set_query_value( $meta_value['value'], $type ) . ' TO *])';
 					break;
 				case '!=':
+
 					$multi_query = array();
 					$wildcard    = '(' . $meta_value['key'] . '_' . $type . ':*)';
 
@@ -758,10 +758,11 @@ class SolrPower_WP_Query {
 						$this->fq[] = $fq;
 					}
 					break;
-				case '<':
+				case '<';
 					$query[]    = '(' . $meta_value['key'] . '_' . $type . ':[* TO ' . $this->set_query_value( $meta_value['value'], $type ) . '])';
 					$this->fq[] = '!(' . $meta_value['key'] . '_' . $type . ':' . $this->set_query_value( $meta_value['value'], $type ) . ')';
 					break;
+
 				case '>':
 					$query[]    = '(' . $meta_value['key'] . '_' . $type . ':[' . $this->set_query_value( $meta_value['value'], $type ) . ' TO *])';
 					$this->fq[] = '!(' . $meta_value['key'] . '_' . $type . ':' . $this->set_query_value( $meta_value['value'], $type ) . ')';
